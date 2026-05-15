@@ -1,96 +1,86 @@
 import { Response } from "express";
 
 import { TaskService } from "../services/TaskService";
+
 import { AuthRequest } from "../middlewares/authMiddleware";
 
 const taskService = new TaskService();
 
 export class TaskController {
 
-  async create(req: AuthRequest, res: Response) {
+  async create(
+    req: AuthRequest,
+    res: Response
+  ) {
 
-    try {
+    const {
+      title,
+      description,
+      completed,
+    } = req.body;
 
-      const { title, description, completed } = req.body;
+    const task = await taskService.createTask(
+      title,
+      description,
+      completed,
+      req.userId!
+    );
 
-      const task = await taskService.createTask(
-        title,
-        description,
-        completed,
-        req.userId!
-      );
-
-      return res.status(201).json({
-        sucesso: true,
-        mensagem: "Tarefa criada com sucesso!",
-        tarefa: task,
-      });
-
-    } catch (err: any) {
-
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: err.message,
-      });
-    }
+    return res.status(201).json({
+      sucesso: true,
+      mensagem: "Tarefa criada com sucesso!",
+      tarefa: task,
+    });
   }
 
-  async getAll(req: AuthRequest, res: Response) {
+  async getAll(
+    req: AuthRequest,
+    res: Response
+  ) {
 
-    try {
+    const tasks = await taskService.getAllTasks(
+      req.userId!
+    );
 
-      const tasks = await taskService.getAllTasks(
-        req.userId!
-      );
-
-      return res.status(200).json({
-        sucesso: true,
-        tarefas: tasks,
-      });
-
-    } catch (err: any) {
-
-      return res.status(500).json({
-        sucesso: false,
-        mensagem: "Erro ao buscar tarefas",
-      });
-    }
+    return res.status(200).json({
+      sucesso: true,
+      tarefas: tasks,
+    });
   }
 
-  async getById(req: AuthRequest, res: Response) {
+  async getById(
+    req: AuthRequest,
+    res: Response
+  ) {
 
-    try {
+    const id = req.params.id as string;
 
-      const id = req.params.id as string;
+    const task = await taskService.getTaskById(
+      id,
+      req.userId!
+    );
 
-      const task = await taskService.getTaskById(
-        id,
-        req.userId!
-      );
-
-      return res.status(200).json({
-        sucesso: true,
-        tarefa: task,
-      });
-
-    } catch (err: any) {
-
-      return res.status(404).json({
-        sucesso: false,
-        mensagem: err.message,
-      });
-    }
+    return res.status(200).json({
+      sucesso: true,
+      tarefa: task,
+    });
   }
 
-  async update(req: AuthRequest, res: Response) {
+  async update(
+    req: AuthRequest,
+    res: Response
+  ) {
 
-    try {
+    const id = req.params.id as string;
 
-      const id = req.params.id as string;
+    const {
+      title,
+      description,
+      completed,
+    } = req.body;
 
-      const { title, description, completed } = req.body;
-
-      const updatedTask = await taskService.updateTask(
+    const updatedTask =
+      await taskService.updateTask(
         id,
         req.userId!,
         {
@@ -100,43 +90,28 @@ export class TaskController {
         }
       );
 
-      return res.status(200).json({
-        sucesso: true,
-        mensagem: "Tarefa atualizada com sucesso!",
-        tarefa: updatedTask,
-      });
-
-    } catch (err: any) {
-
-      return res.status(404).json({
-        sucesso: false,
-        mensagem: err.message,
-      });
-    }
+    return res.status(200).json({
+      sucesso: true,
+      mensagem: "Tarefa atualizada com sucesso!",
+      tarefa: updatedTask,
+    });
   }
 
-  async delete(req: AuthRequest, res: Response) {
+  async delete(
+    req: AuthRequest,
+    res: Response
+  ) {
 
-    try {
+    const id = req.params.id as string;
 
-      const id = req.params.id as string;
+    await taskService.deleteTask(
+      id,
+      req.userId!
+    );
 
-      await taskService.deleteTask(
-        id,
-        req.userId!
-      );
-
-      return res.status(200).json({
-        sucesso: true,
-        mensagem: "Tarefa removida com sucesso!",
-      });
-
-    } catch (err: any) {
-
-      return res.status(404).json({
-        sucesso: false,
-        mensagem: err.message,
-      });
-    }
+    return res.status(200).json({
+      sucesso: true,
+      mensagem: "Tarefa removida com sucesso!",
+    });
   }
 }

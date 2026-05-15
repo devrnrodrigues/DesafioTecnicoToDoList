@@ -3,6 +3,8 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import { AppError } from "../errors/AppError";
+
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export class AuthService {
@@ -18,7 +20,10 @@ export class AuthService {
     });
 
     if (userExists) {
-      throw new Error("Usuário já existe");
+      throw new AppError(
+        "Usuário já existe",
+        409
+      );
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -47,7 +52,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error("Email ou senha inválidos");
+      throw new AppError(
+        "Email ou senha inválidos",
+        401
+      );
     }
 
     const passwordMatch = await bcrypt.compare(
@@ -56,7 +64,10 @@ export class AuthService {
     );
 
     if (!passwordMatch) {
-      throw new Error("Email ou senha inválidos");
+      throw new AppError(
+        "Email ou senha inválidos",
+        401
+      );
     }
 
     const token = jwt.sign(

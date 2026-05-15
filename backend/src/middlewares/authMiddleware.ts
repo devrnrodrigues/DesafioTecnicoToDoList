@@ -1,5 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import {
+  Request,
+  Response,
+  NextFunction,
+} from "express";
+
 import jwt from "jsonwebtoken";
+
+import { AppError } from "../errors/AppError";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -13,16 +20,21 @@ export function authMiddleware(
   next: NextFunction
 ) {
 
-  const authHeader = req.headers.authorization;
+  const authHeader =
+    req.headers.authorization;
 
   if (!authHeader) {
 
-    return res.status(401).json({
-      mensagem: "Token não informado",
-    });
+    return next(
+      new AppError(
+        "Token não informado",
+        401
+      )
+    );
   }
 
-  const token = authHeader.split(" ")[1];
+  const token =
+    authHeader.split(" ")[1];
 
   try {
 
@@ -37,8 +49,11 @@ export function authMiddleware(
 
   } catch {
 
-    return res.status(401).json({
-      mensagem: "Token inválido",
-    });
+    return next(
+      new AppError(
+        "Token inválido",
+        401
+      )
+    );
   }
 }

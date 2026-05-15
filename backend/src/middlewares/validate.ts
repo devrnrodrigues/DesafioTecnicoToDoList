@@ -1,7 +1,19 @@
-import { Request, Response, NextFunction } from "express";
-import { ZodError, ZodTypeAny } from "zod";
+import {
+  Request,
+  Response,
+  NextFunction,
+} from "express";
 
-export function validate(schema: ZodTypeAny) {
+import {
+  ZodError,
+  ZodTypeAny,
+} from "zod";
+
+import { AppError } from "../errors/AppError";
+
+export function validate(
+  schema: ZodTypeAny
+) {
 
   return async (
     req: Request,
@@ -11,7 +23,9 @@ export function validate(schema: ZodTypeAny) {
 
     try {
 
-      await schema.parseAsync(req.body);
+      await schema.parseAsync(
+        req.body
+      );
 
       return next();
 
@@ -19,20 +33,19 @@ export function validate(schema: ZodTypeAny) {
 
       if (error instanceof ZodError) {
 
-        return res.status(400).json({
-          sucesso: false,
-          mensagem: "Erro de validação",
-          erros: error.issues.map((err) => ({
-            campo: err.path[0],
-            mensagem: err.message,
-          })),
-        });
+        return next(
+          new AppError(
+            "Erro de validação",
+            400,
+            error.issues.map((err) => ({
+              campo: err.path[0],
+              mensagem: err.message,
+            }))
+          )
+        );
       }
 
-      return res.status(500).json({
-        sucesso: false,
-        mensagem: "Erro interno do servidor",
-      });
+      return next(error);
     }
   };
 }
