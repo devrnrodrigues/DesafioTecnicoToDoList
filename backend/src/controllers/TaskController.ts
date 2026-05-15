@@ -1,7 +1,6 @@
 import { Response } from "express";
 
 import { TaskService } from "../services/TaskService";
-
 import { AuthRequest } from "../middlewares/authMiddleware";
 
 const taskService = new TaskService();
@@ -16,13 +15,11 @@ export class TaskController {
     const {
       title,
       description,
-      completed,
     } = req.body;
 
     const task = await taskService.createTask(
       title,
       description,
-      completed,
       req.userId!
     );
 

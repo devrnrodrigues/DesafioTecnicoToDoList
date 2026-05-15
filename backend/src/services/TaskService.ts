@@ -1,5 +1,4 @@
 import { prisma } from "../lib/prisma";
-
 import { AppError } from "../errors/AppError";
 
 export class TaskService {
@@ -7,7 +6,6 @@ export class TaskService {
   async createTask(
     title: string,
     description: string | undefined,
-    completed: boolean | undefined,
     userId: string
   ) {
 
@@ -15,7 +13,7 @@ export class TaskService {
       data: {
         title,
         description,
-        completed,
+        completed: false,
         userId,
       },
     });
@@ -26,32 +24,19 @@ export class TaskService {
   async getAllTasks(userId: string) {
 
     return await prisma.task.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      where: { userId },
+      orderBy: { createdAt: "desc" },
     });
   }
 
-  async getTaskById(
-    id: string,
-    userId: string
-  ) {
+  async getTaskById(id: string, userId: string) {
 
     const task = await prisma.task.findFirst({
-      where: {
-        id,
-        userId,
-      },
+      where: { id, userId },
     });
 
     if (!task) {
-      throw new AppError(
-        "Tarefa não encontrada",
-        404
-      );
+      throw new AppError("Tarefa não encontrada", 404);
     }
 
     return task;
@@ -68,52 +53,33 @@ export class TaskService {
   ) {
 
     const taskExists = await prisma.task.findFirst({
-      where: {
-        id,
-        userId,
-      },
+      where: { id, userId },
     });
 
     if (!taskExists) {
-      throw new AppError(
-        "Tarefa não encontrada",
-        404
-      );
+      throw new AppError("Tarefa não encontrada", 404);
     }
 
     const updatedTask = await prisma.task.update({
-      where: {
-        id,
-      },
+      where: { id },
       data,
     });
 
     return updatedTask;
   }
 
-  async deleteTask(
-    id: string,
-    userId: string
-  ) {
+  async deleteTask(id: string, userId: string) {
 
     const taskExists = await prisma.task.findFirst({
-      where: {
-        id,
-        userId,
-      },
+      where: { id, userId },
     });
 
     if (!taskExists) {
-      throw new AppError(
-        "Tarefa não encontrada",
-        404
-      );
+      throw new AppError("Tarefa não encontrada", 404);
     }
 
     await prisma.task.delete({
-      where: {
-        id,
-      },
+      where: { id },
     });
 
     return {

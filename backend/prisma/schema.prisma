@@ -12,7 +12,7 @@ model User {
   name      String
   email     String   @unique
   password  String
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   tasks Task[]
 
@@ -20,16 +20,16 @@ model User {
 }
 
 model Task {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
-  description String?
-  completed   Boolean?  @default(false)
+  description String?   
+  completed   Boolean   @default(false)
 
-  userId String? @map("user_id") @db.Uuid
+  userId String   @map("user_id") @db.Uuid
 
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
 }
