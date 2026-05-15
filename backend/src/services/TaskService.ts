@@ -87,7 +87,7 @@ export class TaskService {
     });
 
     if (!taskExists) {
-      throw new Error("Task not found");
+      throw new Error("Tarefa não encontrada");
     }
 
     await prisma.task.delete({
@@ -97,7 +97,7 @@ export class TaskService {
     });
 
     return {
-      message: "Task deleted successfully",
+      message: "Tarefa deletada com sucesso",
     };
   }
 }

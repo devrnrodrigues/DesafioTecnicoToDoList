@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 
@@ -13,9 +15,13 @@ app.use("/auth", authRoutes);
 app.use("/tasks", taskRoutes);
 
 app.get("/", (_, res) => {
-  res.send("API Running");
+
+  return res.json({
+    mensagem: "API funcionando!",
+  });
 });
 
 app.listen(3333, () => {
-  console.log("Server running on port 3333");
+
+  console.log("Servidor rodando na porta 3333");
 });
