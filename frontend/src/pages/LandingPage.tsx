@@ -8,7 +8,7 @@ const LandingPage: React.FC = () => {
   return (
     <S.GlobalStyleHelper>
       <S.Logo>
-        <S.Dot /> To-Do list
+        <S.Dot /> To-Do list .
       </S.Logo>
 
     

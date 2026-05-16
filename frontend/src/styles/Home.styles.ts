@@ -40,6 +40,7 @@ export const Sidebar = styled.aside<SidebarProps>`
   height: 100%;
   z-index: 100;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     position: absolute;
@@ -72,7 +73,7 @@ export const MobileHeader = styled.div`
     align-items: center;
     width: 100%;
     padding: 16px 24px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: absolute;
@@ -134,18 +135,18 @@ export const NavMenu = styled.nav`
 `;
 
 interface NavItemProps {
-  active?: boolean;
+  $active?: boolean; 
 }
 
 export const NavItem = styled.button<NavItemProps>`
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.08)' : 'transparent'};
-  color: ${props => props.active ? 'white' : '#b0b0b0'};
-  border: ${props => props.active ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
+  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.08)' : 'transparent'};
+  color: ${props => props.$active ? 'white' : '#b0b0b0'};
+  border: ${props => props.$active ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
   padding: 12px 15px;
   border-radius: 12px;
   text-align: left;
   font-size: 0.95rem;
-  font-weight: ${props => props.active ? '600' : '400'};
+  font-weight: ${props => props.$active ? '600' : '400'};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -177,223 +178,4 @@ export const ThemeButton = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 0.1);
   }
-`;
-
-export const MainContainer = styled.main`
-  flex: 1;
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
-  height: 100%;
-
-  @media (max-width: 768px) {
-    padding: 100px 20px 40px 20px;
-  }
-`;
-
-export const HeaderSection = styled.div`
-  text-align: center;
-  margin-bottom: 40px;
-`;
-
-export const Heading = styled.h1`
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-  letter-spacing: -1px;
-
-  span {
-    color: #3b9dfa;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 2.2rem;
-  }
-`;
-
-export const Subtitle = styled.p`
-  color: #b0b0b0;
-  font-size: 1rem;
-`;
-
-export const ControlsContainer = styled.div`
-  width: 100%;
-  max-width: 650px;
-  display: flex;
-  gap: 12px;
-  margin-bottom: 32px;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 16px;
-  }
-`;
-
-export const SearchInputWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0 16px;
-  border-radius: 12px;
-  color: #b0b0b0;
-  min-height: 48px;
-  transition: all 0.2s ease;
-
-  &:focus-within {
-    border-color: #3b9dfa;
-    background: rgba(255, 255, 255, 0.08);
-  }
-`;
-
-export const SearchInput = styled.input`
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 0.95rem;
-  outline: none;
-  width: 100%;
-
-  &::placeholder {
-    color: #707580;
-  }
-`;
-
-export const BtnAdd = styled.button`
-  background-color: #3b9dfa;
-  color: white;
-  border: none;
-  padding: 0 24px;
-  height: 48px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(59, 157, 250, 0.3);
-
-  &:hover {
-    background-color: #56aeff;
-    box-shadow: 0 6px 20px rgba(59, 157, 250, 0.4);
-  }
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-`;
-
-export const TaskList = styled.div`
-  width: 100%;
-  max-width: 650px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-export const TaskCardWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  overflow: hidden;
-`;
-
-export const TaskCard = styled.div`
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-`;
-
-export const TaskContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  width: 100%;
-`;
-
-export const TaskText = styled.p`
-  font-size: 1rem;
-  color: #ffffff;
-  word-break: break-word;
-`;
-
-export const EditInput = styled.input`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid #3b9dfa;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  padding: 6px 12px;
-  outline: none;
-  flex: 1;
-  width: 100%;
-`;
-
-export const ActionsArea = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  @media (max-width: 480px) {
-    width: 100%;
-    justify-content: flex-end;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 12px;
-  }
-`;
-
-export const IconButton = styled.button<{ variant?: 'danger' | 'info' | 'primary' }>`
-  background: transparent;
-  border: none;
-  color: ${props => {
-    if (props.variant === 'danger') return '#ff5252';
-    if (props.variant === 'info') return '#b0b0b0';
-    return '#3b9dfa';
-  }};
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${props => {
-      if (props.variant === 'danger') return 'rgba(255, 82, 82, 0.1)';
-      if (props.variant === 'info') return 'rgba(255, 255, 255, 0.08)';
-      return 'rgba(59, 157, 250, 0.1)';
-    }};
-    color: ${props => props.variant === 'info' && 'white'};
-  }
-`;
-
-export const InfoSection = styled.div`
-  background: rgba(0, 0, 0, 0.2);
-  padding: 12px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  font-size: 0.88rem;
-  color: #b0b0b0;
-  line-height: 1.4;
 `;
