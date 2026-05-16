@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importe o hook
+import { useNavigate } from 'react-router-dom'; 
 import * as S from '../styles/LandingPage.styles';
 
 const LandingPage: React.FC = () => {
@@ -27,9 +27,9 @@ const LandingPage: React.FC = () => {
           <S.PrimaryButton onClick={() => navigate('/register')}>
             Cadastre-se
           </S.PrimaryButton>
-          <S.SecondaryButton>
+          <S.SecondaryButton onClick={() => navigate('/home')}>
             Modo Visitante
-          </S.SecondaryButton>
+          </S.SecondaryButton >
         </S.CtaContainer>
       </S.Hero>
 

@@ -57,7 +57,7 @@ const Login: React.FC = () => {
           </S.FormGrid>
 
           <S.ButtonGroup>
-            <S.BtnPrimary type="submit">Entrar</S.BtnPrimary>
+            <S.BtnPrimary type="submit" onClick={() => navigate('/home')}>Entrar</S.BtnPrimary>
           </S.ButtonGroup>
         </form>
       </S.Container>

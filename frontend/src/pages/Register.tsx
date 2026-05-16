@@ -84,8 +84,8 @@ const Register: React.FC = () => {
           </S.FormGrid>
 
           <S.ButtonGroup>
-            <S.BtnSecondary type="button">Modo visitante</S.BtnSecondary>
-            <S.BtnPrimary type="submit">Criar conta</S.BtnPrimary>
+            <S.BtnSecondary type="button" onClick={() => navigate('/home')}>Modo visitante</S.BtnSecondary>
+            <S.BtnPrimary type="submit" onClick={() => navigate('/home')}>Criar conta</S.BtnPrimary>
           </S.ButtonGroup>
         </form>
       </S.Container>
