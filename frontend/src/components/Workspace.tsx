@@ -167,7 +167,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
     <S.MainContainer>
       <S.HeaderSection>
         <S.Heading>Workspace<span>.</span></S.Heading>
-        <S.Subtitle>Gerencie suas tarefas. Por padrão todas serão mostradas.</S.Subtitle>
+        <S.Subtitle>Gerencie suas tarefas. Por padrão todas as tarefas serão mostradas.</S.Subtitle>
       </S.HeaderSection>
 
       <S.ControlsContainer>

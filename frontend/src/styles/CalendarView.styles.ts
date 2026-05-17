@@ -8,9 +8,11 @@ export const CalendarContainer = styled.main`
   align-items: center;
   overflow-y: auto;
   height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
-    padding: 100px 20px 40px 20px;
+    padding: 80px 16px 40px 16px;
   }
 `;
 
@@ -63,6 +65,11 @@ export const InfoBox = styled.div`
   strong {
     color: #fff;
   }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    font-size: 0.8rem;
+  }
 `;
 
 export const CalendarCardWrapper = styled.div`
@@ -75,6 +82,12 @@ export const CalendarCardWrapper = styled.div`
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+
+  @media (max-width: 600px) {
+    padding: 12px;
+    border-radius: 16px;
+  }
 `;
 
 export const CalendarHeader = styled.div`
@@ -136,8 +149,12 @@ export const TodayBtn = styled.button`
 
 export const CalendarGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
+
+  @media (max-width: 600px) {
+    gap: 4px;
+  }
 `;
 
 export const WeekDayHeader = styled.div`
@@ -148,6 +165,12 @@ export const WeekDayHeader = styled.div`
   padding-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+
+  @media (max-width: 480px) {
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    padding-bottom: 6px;
+  }
 `;
 
 interface DayCellProps {
@@ -169,6 +192,7 @@ export const DayCell = styled.div<DayCellProps>`
   pointer-events: ${props => props.$isCurrentMonth ? 'auto' : 'none'};
   transition: all 0.2s ease;
   cursor: pointer;
+  box-sizing: border-box;
 
   &:hover {
     background: rgba(255, 255, 255, 0.04);
@@ -179,9 +203,21 @@ export const DayCell = styled.div<DayCellProps>`
     }
   }
 
-  @media (max-width: 600px) {
-    min-height: 70px;
-    padding: 6px;
+  @media (max-width: 768px) {
+    min-height: 80px;
+    padding: 8px;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 55px;
+    padding: 4px;
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+
+    &:hover .add-hint {
+      opacity: 0;
+    }
   }
 `;
 
@@ -190,6 +226,11 @@ export const DayNumber = styled.span<{ $isToday?: boolean }>`
   font-weight: ${props => props.$isToday ? '700' : '500'};
   color: ${props => props.$isToday ? '#3b9dfa' : '#ffffff'};
   align-self: flex-start;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    align-self: center;
+  }
 `;
 
 export const TaskIndicatorArea = styled.div`
@@ -198,7 +239,14 @@ export const TaskIndicatorArea = styled.div`
   gap: 4px;
   margin-top: 8px;
   flex: 1;
+  width: 100%;
   justify-content: flex-end;
+
+  @media (max-width: 480px) {
+    margin-top: 2px;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const MiniTaskTag = styled.div`
@@ -213,6 +261,31 @@ export const MiniTaskTag = styled.div`
   overflow: hidden;
   font-weight: 600;
   text-align: left;
+
+  @media (max-width: 600px) {
+    font-size: 0.65rem;
+    padding: 2px 4px;
+  }
+
+  @media (max-width: 480px) {
+    background: #3b9dfa;
+    border-left: none;
+    color: #fff;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    text-align: center;
+    
+    &::before {
+      content: attr(data-count);
+      font-size: 0.65rem;
+    }
+  }
 `;
 
 export const AddEventHint = styled.div`
@@ -222,4 +295,8 @@ export const AddEventHint = styled.div`
   color: #3b9dfa;
   opacity: 0;
   transition: opacity 0.2s ease;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;

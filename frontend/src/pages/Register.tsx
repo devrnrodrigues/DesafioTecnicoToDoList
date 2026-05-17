@@ -35,11 +35,29 @@ const Register: React.FC = () => {
     setLoading(true);
     try {
       const data = await authService.register(name, email, password);
+      
       if (data.sucesso) {
-        setSuccessMessage('Conta criada com sucesso! Redirecionando...');
-        setTimeout(() => {
+        setSuccessMessage('Conta criada com sucesso! Autenticando...');
+        
+        const loginData = await authService.login(email, password);
+        
+        if (loginData.sucesso) {
+          localStorage.setItem('@TodoApp:token', loginData.token);
+          localStorage.setItem('@TodoApp:user', JSON.stringify(loginData.usuario));
+          
+          setTimeout(() => {
+           
+            navigate('/home', { 
+              state: { 
+                showWelcomeToast: true, 
+                userName: name, 
+                isNewUser: true 
+              } 
+            });
+          }, 1500);
+        } else {
           navigate('/login');
-        }, 2000);
+        }
       }
     } catch (err: any) {
       const responseData = err.response?.data;

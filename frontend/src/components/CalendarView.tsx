@@ -133,7 +133,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onSelectDate, setVie
                 
                 <S.TaskIndicatorArea>
                   {hasTasks && (
-                    <S.MiniTaskTag>
+                    <S.MiniTaskTag data-count={dayTasks.length}>
                       {dayTasks.length} {dayTasks.length === 1 ? 'tarefa' : 'tarefas'}
                     </S.MiniTaskTag>
                   )}

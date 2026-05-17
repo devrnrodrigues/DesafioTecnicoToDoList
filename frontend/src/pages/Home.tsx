@@ -7,7 +7,8 @@ import {
   Menu,
   LogOut,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as S from '../styles/Home.styles';
 import { Workspace } from '../components/Workspace';
 import { CalendarView } from '../components/CalendarView';
@@ -32,8 +33,23 @@ const Home: React.FC = () => {
   
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isVisitor = userName === 'Modo Visitante';
+
+  useEffect(() => {
+    if (location.state?.showWelcomeToast) {
+      const { userName: stateName, isNewUser } = location.state;
+      
+      if (isNewUser) {
+        toast.success(`Seja bem-vindo, ${stateName}!`);
+      } else {
+        toast.success(`Seja bem-vindo novamente, ${stateName || ''}!`);
+      }
+
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('@TodoApp:user');
@@ -64,6 +80,7 @@ const Home: React.FC = () => {
     if (isVisitor) {
       localStorage.removeItem('@TodoApp:token');
       localStorage.removeItem('@TodoApp:user');
+      toast.error('Sessão encerrada!');
       navigate('/register');
     } else {
       setIsLogoutModalOpen(true);
@@ -75,6 +92,7 @@ const Home: React.FC = () => {
     localStorage.removeItem('@TodoApp:token');
     localStorage.removeItem('@TodoApp:user');
     setIsLogoutModalOpen(false);
+    toast.error('Sessão encerrada!');
     navigate('/login');
   };
 

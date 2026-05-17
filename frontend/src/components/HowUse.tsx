@@ -3,7 +3,8 @@ import { HelpCircle, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import * as S from '../styles/HowUse.styles';
 
 export const HowUse: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
     {
@@ -59,7 +60,6 @@ export const HowUse: React.FC = () => {
                 {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </S.FaqHeader>
               
-              {/* O componente agora fica sempre montado e o CSS cuida da transição */}
               <S.FaqAnswer $isOpen={isOpen}>
                 {faq.answer}
               </S.FaqAnswer>

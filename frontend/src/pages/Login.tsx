@@ -31,7 +31,14 @@ const Login: React.FC = () => {
         setSuccessMessage('Login realizado com sucesso! Redirecionando...');
         
         setTimeout(() => {
-          navigate('/home');
+          
+          navigate('/home', { 
+            state: { 
+              showWelcomeToast: true, 
+              userName: data.usuario?.name, 
+              isNewUser: false 
+            } 
+          });
         }, 1500);
       }
     } catch (err: any) {
