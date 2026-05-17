@@ -315,7 +315,7 @@ http://localhost:5173
 - Vercel
 
 ## Backend
-- Railway
+- Render
 
 ## Banco de Dados
 - Supabase PostgreSQL
@@ -327,13 +327,13 @@ http://localhost:5173
 ## Frontend
 
 ```txt
-
+https://desafiotodolist.vercel.app/
 ```
 
 ## Backend
 
 ```txt
-
+https://todolist-5dm7.onrender.com/
 ```
 
 ---
