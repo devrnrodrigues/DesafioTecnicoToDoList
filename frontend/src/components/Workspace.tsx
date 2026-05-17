@@ -26,7 +26,6 @@ export const Workspace: React.FC<WorkspaceProps> = ({
   setIsCalendarOpen, 
   selectedDate,
   showAllTasks,
-  setShowAllTasks
 }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
