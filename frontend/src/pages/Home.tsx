@@ -22,6 +22,10 @@ const Home: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('workspace');
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const [showAllTasks, setShowAllTasks] = useState<boolean>(true);
+  
   const [userName, setUserName] = useState<string>('Modo Visitante');
   const [showLogout, setShowLogout] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -196,11 +200,22 @@ const Home: React.FC = () => {
       </S.Sidebar>
 
       {currentView === 'workspace' && (
-        <Workspace setIsCalendarOpen={() => setIsCalendarModalOpen(true)} />
+        <Workspace 
+          setIsCalendarOpen={() => setIsCalendarModalOpen(true)} 
+          selectedDate={selectedDate}
+          showAllTasks={showAllTasks}
+          setShowAllTasks={setShowAllTasks}
+        />
       )}
       
       {currentView === 'calendar' && (
-        <CalendarView />
+        <CalendarView 
+          onSelectDate={(date) => {
+            setSelectedDate(date);
+            setShowAllTasks(false);
+          }}
+          setView={setCurrentView}
+        />
       )}
       
       {currentView === 'howuse' && (
@@ -210,6 +225,9 @@ const Home: React.FC = () => {
       <CalendarModal 
         isOpen={isCalendarModalOpen} 
         onClose={() => setIsCalendarModalOpen(false)} 
+        selectedDate={selectedDate}
+        onSelectDate={setSelectedDate}
+        setShowAllTasks={setShowAllTasks}
       />
 
       <LogoutModal 

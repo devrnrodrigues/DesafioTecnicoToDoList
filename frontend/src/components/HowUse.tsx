@@ -22,7 +22,7 @@ export const HowUse: React.FC = () => {
       question: 'Como funciona a alternância entre o Workspace e o Calendário?',
       answer: 'Você pode usar o menu lateral para alternar completamente a tela central entre a lista de tarefas e o calendário dinâmico. Além disso, o Workspace possui um atalho rápido de calendário que abre uma janela flutuante sem tirar você da sua tela de trabalho atual.'
     },
-   {
+    {
       question: 'O sistema salva minhas tarefas automaticamente?',
       answer: 'Sim! No Modo Visitante, suas tarefas são salvas automaticamente no armazenamento local do seu navegador (localStorage), garantindo que seus dados não sumam ao atualizar a página. Para proteger suas tarefas de forma permanente, acessá-las de qualquer dispositivo e sincronizá-las com segurança em nuvem, basta criar uma conta e fazer login no sistema.'
     }
@@ -58,7 +58,11 @@ export const HowUse: React.FC = () => {
                 </S.QuestionWrapper>
                 {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </S.FaqHeader>
-              {isOpen && <S.FaqAnswer>{faq.answer}</S.FaqAnswer>}
+              
+              {/* O componente agora fica sempre montado e o CSS cuida da transição */}
+              <S.FaqAnswer $isOpen={isOpen}>
+                {faq.answer}
+              </S.FaqAnswer>
             </S.FaqItem>
           );
         })}

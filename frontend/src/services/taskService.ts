@@ -26,41 +26,49 @@ export const taskService = {
     if (hasToken()) {
       try {
         const response = await api.get<TasksListResponse>('/tasks');
-        return response.data.tarefas.map(t => ({
-          id: t.id,
+        return response.data.tarefas.map((t: any) => ({
+          id: String(t.id),
           title: t.title,
           description: t.description || '',
-          completed: t.completed
+          completed: t.completed,
+          createdAt: t.createdAt || t.created_at || new Date().toISOString()
         }));
       } catch (error) {
         console.error('Erro ao buscar tarefas do servidor', error);
         return [];
       }
     } else {
-      return getLocalTasks();
+      return getLocalTasks().map(t => ({ ...t, id: String(t.id) }));
     }
   },
 
   async create(title: string, description: string): Promise<Task> {
     if (hasToken()) {
-      const response = await api.post<TaskResponse>('/tasks', {
-        title,
-        description
-      });
-      const t = response.data.tarefa;
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description || '',
-        completed: t.completed
-      };
+      try {
+        const response = await api.post<TaskResponse>('/tasks', {
+          title,
+          description
+        });
+        const t = response.data.tarefa as any;
+        return {
+          id: String(t.id),
+          title: t.title,
+          description: t.description || '',
+          completed: t.completed,
+          createdAt: t.createdAt || t.created_at || new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('Erro ao criar tarefa no servidor', error);
+        throw error;
+      }
     } else {
       const localTasks = getLocalTasks();
       const newTask: Task = {
-        id: Date.now(),
+        id: String(Date.now()),
         title,
         description: description,
-        completed: false
+        completed: false,
+        createdAt: new Date().toISOString()
       };
       localTasks.unshift(newTask);
       saveLocalTasks(localTasks);
@@ -69,36 +77,53 @@ export const taskService = {
   },
 
   async update(id: string | number, data: { title?: string; description?: string; completed?: boolean }): Promise<Task | null> {
+    const idString = String(id);
+
     if (hasToken()) {
-      const response = await api.put<TaskResponse>(`/tasks/${id}`, data);
-      const t = response.data.tarefa;
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description || '',
-        completed: t.completed
-      };
+      try {
+        const response = await api.put<TaskResponse>(`/tasks/${idString}`, data);
+        const t = response.data.tarefa as any;
+        return {
+          id: String(t.id),
+          title: t.title,
+          description: t.description || '',
+          completed: t.completed,
+          createdAt: t.createdAt || t.created_at || new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('Erro ao atualizar tarefa no servidor', error);
+        throw error;
+      }
     } else {
       const localTasks = getLocalTasks();
       let updatedTask: Task | null = null;
+      
       const updatedList = localTasks.map(t => {
-        if (t.id === id) {
-          updatedTask = { ...t, ...data };
+        if (String(t.id) === idString) {
+          updatedTask = { ...t, ...data, id: idString };
           return updatedTask;
         }
         return t;
       });
+      
       saveLocalTasks(updatedList);
       return updatedTask;
     }
   },
 
   async delete(id: string | number): Promise<void> {
+    const idString = String(id);
+
     if (hasToken()) {
-      await api.delete(`/tasks/${id}`);
+      try {
+        await api.delete(`/tasks/${idString}`);
+      } catch (error) {
+        console.error('Erro ao deletar tarefa no servidor', error);
+        throw error;
+      }
     } else {
       const localTasks = getLocalTasks();
-      const filtered = localTasks.filter(t => t.id !== id);
+      const filtered = localTasks.filter(t => String(t.id) !== idString);
       saveLocalTasks(filtered);
     }
   }

@@ -8,6 +8,7 @@ import {
   Check, 
   Calendar 
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 import * as S from '../styles/Workspace.styles';
 import { TaskModal } from './TaskModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
@@ -16,9 +17,17 @@ import type { Task } from '../types/task';
 
 interface WorkspaceProps {
   setIsCalendarOpen: (isOpen: boolean) => void;
+  selectedDate: Date;
+  showAllTasks: boolean;
+  setShowAllTasks: (showAll: boolean) => void;
 }
 
-export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
+export const Workspace: React.FC<WorkspaceProps> = ({ 
+  setIsCalendarOpen, 
+  selectedDate,
+  showAllTasks,
+  setShowAllTasks
+}) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | number | null>(null);
@@ -28,12 +37,17 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  const currentDateFormatted = new Date().toLocaleDateString('pt-BR');
+  const currentDateFormatted = selectedDate.toLocaleDateString('pt-BR');
 
   useEffect(() => {
     async function loadTasks() {
-      const data = await taskService.getAll();
-      setTasks(data);
+      try {
+        const data = await taskService.getAll();
+        setTasks(data);
+      } catch (error) {
+        toast.error('Erro ao carregar as tarefas.');
+        console.error(error);
+      }
     }
     loadTasks();
   }, []);
@@ -43,7 +57,9 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
       const newTask = await taskService.create(title, description);
       setTasks([newTask, ...tasks]);
       setIsModalOpen(false);
+      toast.success('Tarefa criada com sucesso.');
     } catch (error) {
+      toast.error('Erro ao criar tarefa.');
       console.error(error);
     }
   };
@@ -60,7 +76,18 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
       setVisibleInfoTaskIds(visibleInfoTaskIds.filter(id => id !== taskToDelete.id));
       if (editingTaskId === taskToDelete.id) setEditingTaskId(null);
       setTaskToDelete(null);
+      
+      toast('Tarefa removida com sucesso.', {
+        type: 'error',
+        icon: () => (
+          <svg viewBox="0 0 24 24" width="100%" height="100%">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+          </svg>
+        )
+      });
+
     } catch (error) {
+      toast.error('Erro ao excluir tarefa.');
       console.error(error);
     }
   };
@@ -75,7 +102,10 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
   };
 
   const saveEdit = async (id: string | number) => {
-    if (!editingText.trim()) return;
+    if (!editingText.trim()) {
+      toast.warning('O título da tarefa não pode ficar vazio.');
+      return;
+    }
     try {
       const updated = await taskService.update(id, {
         title: editingText,
@@ -83,9 +113,11 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
       });
       if (updated) {
         setTasks(tasks.map(task => task.id === id ? updated : task));
+        toast.info('Tarefa atualizada com sucesso.');
       }
       setEditingTaskId(null);
     } catch (error) {
+      toast.error('Erro ao salvar alterações.');
       console.error(error);
     }
   };
@@ -102,27 +134,41 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
   const toggleComplete = async (id: string | number) => {
     const taskToToggle = tasks.find(t => t.id === id);
     if (!taskToToggle) return;
+    
+    const nextCompletedState = !taskToToggle.completed;
+
     try {
       const updated = await taskService.update(id, {
-        completed: !taskToToggle.completed
+        completed: nextCompletedState
       });
       if (updated) {
         setTasks(tasks.map(task => task.id === id ? updated : task));
+        if (nextCompletedState) {
+          toast.success('Tarefa concluída com sucesso.');
+        } else {
+          toast.info('Tarefa marcada como pendente.');
+        }
       }
     } catch (error) {
+      toast.error('Erro ao atualizar status da tarefa.');
       console.error(error);
     }
   };
 
-  const filteredTasks = tasks.filter(task =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
+    if (showAllTasks) return matchesSearch;
+    
+    const taskDateStr = task.createdAt ? new Date(task.createdAt).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+    const targetDateStr = selectedDate.toLocaleDateString('pt-BR');
+    return matchesSearch && taskDateStr === targetDateStr;
+  });
 
   return (
     <S.MainContainer>
       <S.HeaderSection>
         <S.Heading>Workspace<span>.</span></S.Heading>
-        <S.Subtitle>Gerencie suas tarefas.</S.Subtitle>
+        <S.Subtitle>Gerencie suas tarefas. Por padrão todas serão mostradas.</S.Subtitle>
       </S.HeaderSection>
 
       <S.ControlsContainer>
@@ -148,12 +194,14 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
         </S.ActionButtonsGroup>
       </S.ControlsContainer>
 
-      <S.InfoBox>
-        <Info size={18} />
-        <p>
-          Apenas as tarefas do dia <strong>{currentDateFormatted}</strong> estão sendo exibidas.
-        </p>
-      </S.InfoBox>
+      {!showAllTasks && (
+        <S.InfoBox>
+          <Info size={18} />
+          <p>
+            Apenas as tarefas do dia <strong>{currentDateFormatted}</strong> estão sendo exibidas.
+          </p>
+        </S.InfoBox>
+      )}
 
       <S.TaskList>
         {filteredTasks.map(task => (

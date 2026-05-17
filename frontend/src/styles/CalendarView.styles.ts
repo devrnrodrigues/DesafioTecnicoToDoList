@@ -67,7 +67,7 @@ export const InfoBox = styled.div`
 
 export const CalendarCardWrapper = styled.div`
   width: 100%;
-  max-width: 900px; /* Expandido para ficar maior e mais imponente */
+  max-width: 900px;
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -198,20 +198,21 @@ export const TaskIndicatorArea = styled.div`
   gap: 4px;
   margin-top: 8px;
   flex: 1;
-  overflow: hidden;
+  justify-content: flex-end;
 `;
 
 export const MiniTaskTag = styled.div`
-  background: rgba(59, 157, 250, 0.15);
+  background: rgba(59, 157, 250, 0.12);
   border-left: 3px solid #3b9dfa;
-  color: #e0f0ff;
+  color: #9cd0ff;
   font-size: 0.72rem;
   padding: 4px 6px;
   border-radius: 4px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-weight: 500;
+  font-weight: 600;
+  text-align: left;
 `;
 
 export const AddEventHint = styled.div`

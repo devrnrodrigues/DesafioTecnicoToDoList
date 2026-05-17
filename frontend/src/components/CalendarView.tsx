@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Info, Plus } from 'lucide-react';
 import * as S from '../styles/CalendarView.styles';
+import { taskService } from '../services/taskService';
+import type { Task } from '../types/task';
 
-export const CalendarView: React.FC = () => {
+interface CalendarViewProps {
+  onSelectDate: (date: Date) => void;
+  setView: (view: 'workspace' | 'calendar' | 'howuse') => void;
+}
+
+export const CalendarView: React.FC<CalendarViewProps> = ({ onSelectDate, setView }) => {
   const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   const monthsNames = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -10,6 +17,7 @@ export const CalendarView: React.FC = () => {
   ];
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -19,6 +27,18 @@ export const CalendarView: React.FC = () => {
 
   const blankDays = Array(firstDayOfMonth).fill(null);
   const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const data = await taskService.getAll();
+        setTasks(data);
+      } catch (error) {
+        console.error('Erro ao buscar tarefas no calendário:', error);
+      }
+    }
+    loadTasks();
+  }, []);
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
@@ -39,6 +59,23 @@ export const CalendarView: React.FC = () => {
       currentMonth === today.getMonth() &&
       currentYear === today.getFullYear()
     );
+  };
+
+  const getTasksForDay = (day: number) => {
+    const targetDateStr = new Date(currentYear, currentMonth, day).toLocaleDateString('pt-BR');
+    
+    return tasks.filter(task => {
+      const taskDateStr = task.createdAt 
+        ? new Date(task.createdAt).toLocaleDateString('pt-BR') 
+        : new Date().toLocaleDateString('pt-BR');
+      return taskDateStr === targetDateStr;
+    });
+  };
+
+  const handleDayClick = (day: number) => {
+    const targetDate = new Date(currentYear, currentMonth, day);
+    onSelectDate(targetDate);
+    setView('workspace');
   };
 
   return (
@@ -82,13 +119,24 @@ export const CalendarView: React.FC = () => {
 
           {monthDays.map((day) => {
             const isToday = checkIsToday(day);
+            const dayTasks = getTasksForDay(day);
+            const hasTasks = dayTasks.length > 0;
 
             return (
-              <S.DayCell key={day} $isCurrentMonth={true} $isToday={isToday}>
+              <S.DayCell 
+                key={day} 
+                $isCurrentMonth={true} 
+                $isToday={isToday}
+                onClick={() => handleDayClick(day)}
+              >
                 <S.DayNumber $isToday={isToday}>{day}</S.DayNumber>
                 
                 <S.TaskIndicatorArea>
-
+                  {hasTasks && (
+                    <S.MiniTaskTag>
+                      {dayTasks.length} {dayTasks.length === 1 ? 'tarefa' : 'tarefas'}
+                    </S.MiniTaskTag>
+                  )}
                 </S.TaskIndicatorArea>
 
                 <S.AddEventHint className="add-hint">

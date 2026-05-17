@@ -5,10 +5,19 @@ import * as S from '../styles/CalendarModal.styles';
 interface CalendarModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedDate: Date;
+  onSelectDate: (date: Date) => void;
+  setShowAllTasks: (showAll: boolean) => void;
 }
 
-export const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+export const CalendarModal: React.FC<CalendarModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  selectedDate, 
+  onSelectDate,
+  setShowAllTasks
+}) => {
+  const [currentDate, setCurrentDate] = useState(new Date(selectedDate));
 
   if (!isOpen) return null;
 
@@ -27,7 +36,23 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose })
   };
 
   const handleGoToToday = () => {
-    setCurrentDate(new Date());
+    const hoje = new Date();
+    setCurrentDate(hoje);
+    onSelectDate(hoje);
+    setShowAllTasks(false);
+    onClose();
+  };
+
+  const handleShowAll = () => {
+    setShowAllTasks(true);
+    onClose();
+  };
+
+  const handleSelectDay = (dia: number) => {
+    const dataSelecionada = new Date(anoAtivo, mesAtivo, dia);
+    onSelectDate(dataSelecionada);
+    setShowAllTasks(false);
+    onClose();
   };
 
   const primeiroDiaDoMes = new Date(anoAtivo, mesAtivo, 1).getDay();
@@ -45,8 +70,18 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose })
       mesAtivo === hojeReal.getMonth() && 
       anoAtivo === hojeReal.getFullYear();
 
+    const isSelecionado = 
+      dia === selectedDate.getDate() &&
+      mesAtivo === selectedDate.getMonth() &&
+      anoAtivo === selectedDate.getFullYear();
+
     dias.push(
-      <S.DayCell key={dia} $isToday={isHoje}>
+      <S.DayCell 
+        key={dia} 
+        $isToday={isHoje} 
+        onClick={() => handleSelectDay(dia)}
+        style={isSelecionado ? { border: '1px solid #3b82f6', background: 'rgba(59, 130, 246, 0.15)' } : {}}
+      >
         {dia}
       </S.DayCell>
     );
@@ -71,9 +106,12 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose })
             <S.YearSubtitle>{anoAtivo}</S.YearSubtitle>
           </S.TitleArea>
           
-          <S.ActionButtonsArea>
+          <S.ActionButtonsArea style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <S.TodayButton type="button" onClick={handleGoToToday}>
               Hoje
+            </S.TodayButton>
+            <S.TodayButton type="button" onClick={handleShowAll} style={{ background: 'rgba(255, 255, 255, 0.05)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              Ver Todas
             </S.TodayButton>
             <S.CloseButton onClick={onClose} title="Fechar">
               <X size={20} />

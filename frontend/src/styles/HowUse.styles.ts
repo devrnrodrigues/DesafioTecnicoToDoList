@@ -24,6 +24,7 @@ export const Heading = styled.h1`
   font-weight: 800;
   margin-bottom: 8px;
   letter-spacing: -1px;
+  color: #ffffff;
 
   span {
     color: #3b9dfa;
@@ -74,13 +75,13 @@ export const FaqList = styled.div`
 `;
 
 export const FaqItem = styled.div<{ $isOpen: boolean }>`
-  background: ${props => props.$isOpen ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.01)'};
+  background: ${props => props.$isOpen ? 'rgba(24, 24, 27, 0.75)' : 'rgba(255, 255, 255, 0.01)'};
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid ${props => props.$isOpen ? 'rgba(59, 157, 250, 0.2)' : 'rgba(255, 255, 255, 0.06)'};
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 export const FaqHeader = styled.div`
@@ -92,6 +93,7 @@ export const FaqHeader = styled.div`
   user-select: none;
   gap: 16px;
   color: #ffffff;
+  transition: color 0.15s ease, background 0.15s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.02);
@@ -111,17 +113,29 @@ export const QuestionText = styled.span`
   letter-spacing: -0.3px;
 `;
 
-export const FaqAnswer = styled.div`
-  padding: 0 20px 20px 52px;
+export const FaqAnswer = styled.div<{ $isOpen: boolean }>`
   font-size: 0.95rem;
   color: #b0b0b0;
   line-height: 1.6;
   white-space: pre-wrap;
   border-top: 1px solid rgba(255, 255, 255, 0.02);
-  margin-top: -4px;
-  padding-top: 16px;
+  
+  /* Lógica e propriedades cruciais da transição */
+  overflow: hidden;
+  transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+
+  max-height: ${props => props.$isOpen ? '250px' : '0px'};
+  opacity: ${props => props.$isOpen ? '1' : '0'};
+  
+  padding-top: ${props => props.$isOpen ? '16px' : '0px'};
+  padding-bottom: ${props => props.$isOpen ? '20px' : '0px'};
+  padding-left: 52px;
+  padding-right: 20px;
 
   @media (max-width: 480px) {
-    padding: 0 20px 20px 20px;
+    padding-left: ${props => props.$isOpen ? '20px' : '0px'};
+    padding-right: ${props => props.$isOpen ? '20px' : '0px'};
   }
 `;
