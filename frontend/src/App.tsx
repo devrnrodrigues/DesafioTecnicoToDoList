@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage'; 
 import Register from './pages/Register'; 
 import Login from './pages/Login';      
-import './index.css';
 import Home from './pages/Home';
+import './index.css';
 
 const App: React.FC = () => {
   return (

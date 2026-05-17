@@ -276,7 +276,7 @@ export const IconButton = styled.button<{ variant?: 'danger' | 'info' | 'primary
   }
 `;
 
-export const InfoSection = styled.div<{ $completed?: boolean }>`
+export const InfoSection = styled.div<{ $completed?: boolean; $isOpen: boolean }>`
   background: rgba(0, 0, 0, 0.2);
   padding: 12px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -288,6 +288,18 @@ export const InfoSection = styled.div<{ $completed?: boolean }>`
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  overflow: hidden;
+  transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              padding 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.2s ease;
+
+  max-height: ${(props) => (props.$isOpen ? '200px' : '0px')};
+  opacity: ${(props) => (props.$isOpen ? '1' : '0')};
+  
+  padding-top: ${(props) => (props.$isOpen ? '12px' : '0px')};
+  padding-bottom: ${(props) => (props.$isOpen ? '12px' : '0px')};
+  padding-left: 16px;
+  padding-right: 16px;
 `;
 
 export const EditTextArea = styled.textarea`

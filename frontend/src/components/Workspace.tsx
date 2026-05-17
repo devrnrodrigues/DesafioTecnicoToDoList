@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -10,83 +10,112 @@ import {
 } from 'lucide-react';
 import * as S from '../styles/Workspace.styles';
 import { TaskModal } from './TaskModal';
-
-interface Task {
-  id: number;
-  text: string;
-  description: string;
-  completed: boolean;
-}
+import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { taskService } from '../services/taskService';
+import type { Task } from '../types/task';
 
 interface WorkspaceProps {
   setIsCalendarOpen: (isOpen: boolean) => void;
 }
 
 export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
-  const [tasks, setTasks] = useState<Task[]>([
-    { 
-      id: 1, 
-      text: 'Finalizar a estilização do design responsivo', 
-      description: 'Garantir que as seções do Workspace funcionem perfeitamente em resoluções mobile e tablets.',
-      completed: false
-    }
-  ]);
-  
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<string | number | null>(null);
   const [editingText, setEditingText] = useState('');
   const [editingDescription, setEditingDescription] = useState('');
-  const [visibleInfoTaskId, setVisibleInfoTaskId] = useState<number | null>(null);
+  const [visibleInfoTaskIds, setVisibleInfoTaskIds] = useState<(string | number)[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const currentDateFormatted = new Date().toLocaleDateString('pt-BR');
 
-  const handleCreateManualTask = (title: string, description: string) => {
-    const novaTarefa: Task = {
-      id: Date.now(),
-      text: title,
-      description: description || 'Sem descrição fornecida.',
-      completed: false
-    };
+  useEffect(() => {
+    async function loadTasks() {
+      const data = await taskService.getAll();
+      setTasks(data);
+    }
+    loadTasks();
+  }, []);
 
-    setTasks([...tasks, novaTarefa]);
-    setIsModalOpen(false);
+  const handleCreateManualTask = async (title: string, description: string) => {
+    try {
+      const newTask = await taskService.create(title, description);
+      setTasks([newTask, ...tasks]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleDeleteTask = (id: number) => {
-    setTasks(tasks.filter(task => task.id !== id));
-    if (visibleInfoTaskId === id) setVisibleInfoTaskId(null);
-    if (editingTaskId === id) setEditingTaskId(null);
+  const openDeleteConfirmation = (task: Task) => {
+    setTaskToDelete(task);
   };
 
-  const startEditing = (id: number, currentText: string, currentDescription: string) => {
+  const handleConfirmDelete = async () => {
+    if (!taskToDelete) return;
+    try {
+      await taskService.delete(taskToDelete.id);
+      setTasks(tasks.filter(task => task.id !== taskToDelete.id));
+      setVisibleInfoTaskIds(visibleInfoTaskIds.filter(id => id !== taskToDelete.id));
+      if (editingTaskId === taskToDelete.id) setEditingTaskId(null);
+      setTaskToDelete(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const startEditing = (id: string | number, currentText: string, currentDescription: string) => {
     setEditingTaskId(id);
     setEditingText(currentText);
     setEditingDescription(currentDescription);
-    setVisibleInfoTaskId(id);
+    if (!visibleInfoTaskIds.includes(id)) {
+      setVisibleInfoTaskIds([...visibleInfoTaskIds, id]);
+    }
   };
 
-  const saveEdit = (id: number) => {
+  const saveEdit = async (id: string | number) => {
     if (!editingText.trim()) return;
-    setTasks(tasks.map(task => 
-      task.id === id 
-        ? { ...task, text: editingText, description: editingDescription } 
-        : task
-    ));
-    setEditingTaskId(null);
+    try {
+      const updated = await taskService.update(id, {
+        title: editingText,
+        description: editingDescription
+      });
+      if (updated) {
+        setTasks(tasks.map(task => task.id === id ? updated : task));
+      }
+      setEditingTaskId(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const toggleInfo = (id: number) => {
+  const toggleInfo = (id: string | number) => {
     if (editingTaskId === id) return;
-    setVisibleInfoTaskId(visibleInfoTaskId === id ? null : id);
+    if (visibleInfoTaskIds.includes(id)) {
+      setVisibleInfoTaskIds(visibleInfoTaskIds.filter(taskId => taskId !== id));
+    } else {
+      setVisibleInfoTaskIds([...visibleInfoTaskIds, id]);
+    }
   };
 
-  const toggleComplete = (id: number) => {
-    setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+  const toggleComplete = async (id: string | number) => {
+    const taskToToggle = tasks.find(t => t.id === id);
+    if (!taskToToggle) return;
+    try {
+      const updated = await taskService.update(id, {
+        completed: !taskToToggle.completed
+      });
+      if (updated) {
+        setTasks(tasks.map(task => task.id === id ? updated : task));
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const filteredTasks = tasks.filter(task =>
-    task.text.toLowerCase().includes(searchQuery.toLowerCase())
+    task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -95,8 +124,6 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
         <S.Heading>Workspace<span>.</span></S.Heading>
         <S.Subtitle>Gerencie suas tarefas.</S.Subtitle>
       </S.HeaderSection>
-
-    
 
       <S.ControlsContainer>
         <S.SearchInputWrapper>
@@ -121,10 +148,10 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
         </S.ActionButtonsGroup>
       </S.ControlsContainer>
 
-        <S.InfoBox>
+      <S.InfoBox>
         <Info size={18} />
         <p>
-          Todas as tarefas do dia <strong>{currentDateFormatted}</strong> estão sendo exibidas.
+          Apenas as tarefas do dia <strong>{currentDateFormatted}</strong> estão sendo exibidas.
         </p>
       </S.InfoBox>
 
@@ -153,7 +180,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
                     autoFocus
                   />
                 ) : (
-                  <S.TaskText $completed={task.completed}>{task.text}</S.TaskText>
+                  <S.TaskText $completed={task.completed}>{task.title}</S.TaskText>
                 )}
               </S.TaskContent>
 
@@ -180,7 +207,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
                   <S.IconButton 
                     variant="primary" 
                     title="Editar"
-                    onClick={() => startEditing(task.id, task.text, task.description)}
+                    onClick={() => startEditing(task.id, task.title, task.description)}
                   >
                     <Pencil size={18} />
                   </S.IconButton>
@@ -189,27 +216,34 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
                 <S.IconButton 
                   variant="danger" 
                   title="Excluir"
-                  onClick={() => handleDeleteTask(task.id)}
+                  onClick={() => openDeleteConfirmation(task)}
                 >
                   <Trash2 size={18} />
                 </S.IconButton>
               </S.ActionsArea>
             </S.TaskCard>
 
-            {visibleInfoTaskId === task.id && (
-              <S.InfoSection $completed={task.completed}>
-                {editingTaskId === task.id ? (
-                  <S.EditTextArea 
-                    value={editingDescription}
-                    onChange={(e) => setEditingDescription(e.target.value)}
-                    rows={3}
-                    placeholder="Editar descrição..."
-                  />
-                ) : (
+            <S.InfoSection 
+              $completed={task.completed} 
+              $isOpen={visibleInfoTaskIds.includes(task.id)}
+            >
+              {editingTaskId === task.id ? (
+                <S.EditTextArea 
+                  value={editingDescription}
+                  onChange={(e) => setEditingDescription(e.target.value)}
+                  rows={3}
+                  placeholder="Editar descrição..."
+                />
+              ) : (
+                task.description.trim() ? (
                   task.description
-                )}
-              </S.InfoSection>
-            )}
+                ) : (
+                  <span style={{ color: '#888', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                    Sem descrição fornecida.
+                  </span>
+                )
+              )}
+            </S.InfoSection>
           </S.TaskCardWrapper>
         ))}
       </S.TaskList>
@@ -218,6 +252,13 @@ export const Workspace: React.FC<WorkspaceProps> = ({ setIsCalendarOpen }) => {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onCreateTask={handleCreateManualTask} 
+      />
+
+      <DeleteConfirmModal
+        isOpen={taskToDelete !== null}
+        onClose={() => setTaskToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        taskTitle={taskToDelete?.title || ''}
       />
     </S.MainContainer>
   );
