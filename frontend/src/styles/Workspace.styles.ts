@@ -325,6 +325,7 @@ export const EditTextArea = styled.textarea`
     color: #707580;
   }
 `;
+
 export const InfoBox = styled.div`
   width: 100%;
   max-width: 450px;
@@ -346,5 +347,28 @@ export const InfoBox = styled.div`
 
   strong {
     color: #fff;
+  }
+`;
+
+export const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #b4b3b3;
+  text-align: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 650px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin-top: 8px;
+
+  p {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 500;
   }
 `;

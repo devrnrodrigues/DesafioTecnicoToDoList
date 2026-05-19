@@ -96,12 +96,36 @@ export const CalendarHeader = styled.div`
   align-items: center;
   margin-bottom: 24px;
   padding: 0 4px;
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+`;
+
+export const MonthControlGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    justify-content: space-between;
+  }
 `;
 
 export const MonthTitle = styled.h2`
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.5px;
+  min-width: 140px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    min-width: auto;
+  }
 `;
 
 export const NavigationActions = styled.div`
@@ -144,6 +168,11 @@ export const TodayBtn = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    height: 34px;
   }
 `;
 

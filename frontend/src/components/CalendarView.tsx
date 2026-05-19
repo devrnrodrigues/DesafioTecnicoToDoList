@@ -94,17 +94,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onSelectDate, setVie
 
       <S.CalendarCardWrapper>
         <S.CalendarHeader>
-          <S.MonthTitle>{`${monthsNames[currentMonth]} ${currentYear}`}</S.MonthTitle>
-          <S.NavigationActions>
+          <S.MonthControlGroup>
             <S.NavBtn onClick={handlePrevMonth} title="Mês Anterior">
               <ChevronLeft size={20} />
             </S.NavBtn>
-            <S.TodayBtn onClick={handleGoToToday} title="Ir para hoje">
-              Hoje
-            </S.TodayBtn>
+            <S.MonthTitle>{`${monthsNames[currentMonth]} ${currentYear}`}</S.MonthTitle>
             <S.NavBtn onClick={handleNextMonth} title="Próximo Mês">
               <ChevronRight size={20} />
             </S.NavBtn>
+          </S.MonthControlGroup>
+
+          <S.NavigationActions>
+            <S.TodayBtn onClick={handleGoToToday} title="Ir para hoje">
+              Hoje
+            </S.TodayBtn>
           </S.NavigationActions>
         </S.CalendarHeader>
 

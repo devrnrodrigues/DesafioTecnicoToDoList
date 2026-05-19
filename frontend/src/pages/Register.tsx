@@ -46,7 +46,6 @@ const Register: React.FC = () => {
           localStorage.setItem('@TodoApp:user', JSON.stringify(loginData.usuario));
           
           setTimeout(() => {
-           
             navigate('/home', { 
               state: { 
                 showWelcomeToast: true, 
@@ -177,7 +176,9 @@ const Register: React.FC = () => {
           </S.FormGrid>
 
           <S.ButtonGroup>
-            <S.BtnSecondary type="button" onClick={() => navigate('/home')}>Modo visitante</S.BtnSecondary>
+            <S.BtnSecondary type="button" onClick={() => navigate('/home', { state: { isGuest: true } })}>
+              Modo visitante
+            </S.BtnSecondary>
             <S.BtnPrimary type="submit" disabled={loading}>
               {loading ? 'Criando...' : 'Criar conta'}
             </S.BtnPrimary>

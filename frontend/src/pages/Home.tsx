@@ -48,6 +48,10 @@ const Home: React.FC = () => {
       }
 
       navigate(location.pathname, { replace: true, state: {} });
+    } else if (location.state?.isGuest) {
+      toast.info("Você está em modo visitante.");
+      
+      navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
 

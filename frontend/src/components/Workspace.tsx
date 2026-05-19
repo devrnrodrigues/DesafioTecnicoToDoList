@@ -6,7 +6,8 @@ import {
   Trash2, 
   Info, 
   Check, 
-  Calendar 
+  Calendar,
+  ClipboardList
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import * as S from '../styles/Workspace.styles';
@@ -202,98 +203,105 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         </S.InfoBox>
       )}
 
-      <S.TaskList>
-        {filteredTasks.map(task => (
-          <S.TaskCardWrapper key={task.id}>
-            <S.TaskCard>
-              <S.TaskContent>
-                <S.CheckboxWrapper>
-                  <S.CheckboxInput 
-                    type="checkbox" 
-                    checked={task.completed} 
-                    onChange={() => toggleComplete(task.id)} 
-                  />
-                  <S.CustomCheckbox $checked={task.completed}>
-                    {task.completed && <Check size={12} strokeWidth={3} />}
-                  </S.CustomCheckbox>
-                </S.CheckboxWrapper>
+      {filteredTasks.length === 0 ? (
+        <S.EmptyStateContainer>
+          <ClipboardList size={42} strokeWidth={1.5} />
+          <p>Não existem tarefas.</p>
+        </S.EmptyStateContainer>
+      ) : (
+        <S.TaskList>
+          {filteredTasks.map(task => (
+            <S.TaskCardWrapper key={task.id}>
+              <S.TaskCard>
+                <S.TaskContent>
+                  <S.CheckboxWrapper>
+                    <S.CheckboxInput 
+                      type="checkbox" 
+                      checked={task.completed} 
+                      onChange={() => toggleComplete(task.id)} 
+                    />
+                    <S.CustomCheckbox $checked={task.completed}>
+                      {task.completed && <Check size={12} strokeWidth={3} />}
+                    </S.CustomCheckbox>
+                  </S.CheckboxWrapper>
 
+                  {editingTaskId === task.id ? (
+                    <S.EditInput 
+                      type="text" 
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && saveEdit(task.id)}
+                      autoFocus
+                    />
+                  ) : (
+                    <S.TaskText $completed={task.completed}>{task.title}</S.TaskText>
+                  )}
+                </S.TaskContent>
+
+                <S.ActionsArea>
+                  {editingTaskId !== task.id && (
+                    <S.IconButton 
+                      variant="info" 
+                      title="Informações"
+                      onClick={() => toggleInfo(task.id)}
+                    >
+                      <Info size={18} />
+                    </S.IconButton>
+                  )}
+
+                  {editingTaskId === task.id ? (
+                    <S.IconButton 
+                      variant="primary" 
+                      title="Salvar"
+                      onClick={() => saveEdit(task.id)}
+                    >
+                      <Check size={18} />
+                    </S.IconButton>
+                  ) : (
+                    <S.IconButton 
+                      variant="primary" 
+                      title="Editar"
+                      onClick={() => startEditing(task.id, task.title, task.description)}
+                    >
+                      <Pencil size={18} />
+                    </S.IconButton>
+                  )}
+
+                  <S.IconButton 
+                    variant="danger" 
+                    title="Excluir"
+                    onClick={() => openDeleteConfirmation(task)}
+                  >
+                    <Trash2 size={18} />
+                  </S.IconButton>
+                </S.ActionsArea>
+              </S.TaskCard>
+
+              <S.InfoSection 
+                $completed={task.completed} 
+                $isOpen={visibleInfoTaskIds.includes(task.id)}
+              >
                 {editingTaskId === task.id ? (
-                  <S.EditInput 
-                    type="text" 
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && saveEdit(task.id)}
-                    autoFocus
+                  <S.EditTextArea 
+                    value={editingDescription}
+                    onChange={(e) => setEditingDescription(e.target.value)}
+                    rows={3}
+                    placeholder="Editar descrição..."
                   />
                 ) : (
-                  <S.TaskText $completed={task.completed}>{task.title}</S.TaskText>
+                  task.description.trim() ? (
+                    task.description
+                  ) : (
+                    <span style={{ color: '#888', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                      Sem descrição fornecida.
+                    </span>
+                  )
                 )}
-              </S.TaskContent>
-
-              <S.ActionsArea>
-                {editingTaskId !== task.id && (
-                  <S.IconButton 
-                    variant="info" 
-                    title="Informações"
-                    onClick={() => toggleInfo(task.id)}
-                  >
-                    <Info size={18} />
-                  </S.IconButton>
-                )}
-
-                {editingTaskId === task.id ? (
-                  <S.IconButton 
-                    variant="primary" 
-                    title="Salvar"
-                    onClick={() => saveEdit(task.id)}
-                  >
-                    <Check size={18} />
-                  </S.IconButton>
-                ) : (
-                  <S.IconButton 
-                    variant="primary" 
-                    title="Editar"
-                    onClick={() => startEditing(task.id, task.title, task.description)}
-                  >
-                    <Pencil size={18} />
-                  </S.IconButton>
-                )}
-
-                <S.IconButton 
-                  variant="danger" 
-                  title="Excluir"
-                  onClick={() => openDeleteConfirmation(task)}
-                >
-                  <Trash2 size={18} />
-                </S.IconButton>
-              </S.ActionsArea>
-            </S.TaskCard>
-
-            <S.InfoSection 
-              $completed={task.completed} 
-              $isOpen={visibleInfoTaskIds.includes(task.id)}
-            >
-              {editingTaskId === task.id ? (
-                <S.EditTextArea 
-                  value={editingDescription}
-                  onChange={(e) => setEditingDescription(e.target.value)}
-                  rows={3}
-                  placeholder="Editar descrição..."
-                />
-              ) : (
-                task.description.trim() ? (
-                  task.description
-                ) : (
-                  <span style={{ color: '#888', fontStyle: 'italic', fontSize: '0.9rem' }}>
-                    Sem descrição fornecida.
-                  </span>
-                )
-              )}
-            </S.InfoSection>
-          </S.TaskCardWrapper>
-        ))}
-      </S.TaskList>
+              </S.InfoSection>
+            </S.TaskCardWrapper>
+          ))}
+        </S.TaskList>
+      )}
 
       <TaskModal 
         isOpen={isModalOpen} 
@@ -310,3 +318,5 @@ export const Workspace: React.FC<WorkspaceProps> = ({
     </S.MainContainer>
   );
 };
+
+export default Workspace;

@@ -4,15 +4,13 @@ import * as S from '../styles/LandingPage.styles';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate(); 
-
+  
   return (
     <S.GlobalStyleHelper>
       <S.Logo>
         <S.Dot /> To-Do list .
       </S.Logo>
-
     
-
       <S.Hero>
         <S.Title>
           Planeje suas tarefas<br />
@@ -21,18 +19,15 @@ const LandingPage: React.FC = () => {
         <S.Description>
           Assuma o controle do seu tempo. Planeje, execute e acompanhe suas tarefas.
         </S.Description>
-
         <S.CtaContainer>
-          
           <S.PrimaryButton onClick={() => navigate('/register')}>
             Cadastre-se
           </S.PrimaryButton>
-          <S.SecondaryButton onClick={() => navigate('/home')}>
+          <S.SecondaryButton onClick={() => navigate('/home', { state: { isGuest: true } })}>
             Modo Visitante
           </S.SecondaryButton >
         </S.CtaContainer>
       </S.Hero>
-
       <S.Features>
         <S.Card>
           <h3>Modo Visitante</h3>
