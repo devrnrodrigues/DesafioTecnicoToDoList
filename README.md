@@ -178,7 +178,7 @@ Remove permanentemente uma tarefa.
 Com o backend rodando localmente, a documentação pode ser acessada em:
 
 ```txt
-http://localhost:3333/api-docs
+http://localhost:3333/docs
 ```
 
 ---
