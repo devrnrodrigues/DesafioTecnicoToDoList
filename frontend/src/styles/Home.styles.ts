@@ -137,11 +137,13 @@ interface NavItemProps {
 }
 
 export const NavItem = styled.button<NavItemProps>`
-  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.08)' : 'transparent'};
+  position: relative;
+  overflow: hidden; /* Garante que a linha fique contida nas bordas arredondadas do botão */
+  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.05)' : 'transparent'};
   color: ${props => props.$active ? 'white' : '#b0b0b0'};
-  border: ${props => props.$active ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
+  border: none;
   padding: 12px 15px;
-  border-radius: 12px;
+  border-radius: 8px; /* Arredondamento do botão */
   text-align: left;
   font-size: 0.95rem;
   font-weight: ${props => props.$active ? '600' : '400'};
@@ -150,10 +152,23 @@ export const NavItem = styled.button<NavItemProps>`
   align-items: center;
   gap: 12px;
   width: 100%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;  
+    background: #3b9dfa; 
+    border-radius: ${props => props.$active ? '8px 0 0 8px' : '0'};
+    opacity: ${props => props.$active ? 1 : 0};
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     color: white;
   }
 `;

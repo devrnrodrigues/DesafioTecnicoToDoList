@@ -16,7 +16,6 @@ export const Overlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(10, 10, 12, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -27,7 +26,7 @@ export const Overlay = styled.div`
 `;
 
 export const ModalContainer = styled.div`
-  background: rgba(24, 24, 27, 0.75);
+   background: rgba(15, 15, 15, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   width: 100%;
