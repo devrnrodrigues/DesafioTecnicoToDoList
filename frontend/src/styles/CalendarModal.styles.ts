@@ -6,7 +6,6 @@ export const ModalOverlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -18,13 +17,11 @@ export const ModalOverlay = styled.div`
 export const ModalContent = styled.div`
   width: 100%;
   max-width: 420px;
-  background: rgba(20, 20, 20, 0.85);
+   background: rgba(15, 15, 15, 0.67);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   color: white;
   animation: fadeIn 0.2s ease-out;
 

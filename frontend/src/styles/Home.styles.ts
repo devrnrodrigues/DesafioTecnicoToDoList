@@ -47,8 +47,6 @@ export const Sidebar = styled.aside<SidebarProps>`
     top: 0;
     left: 0;
     transform: ${props => props.$isOpen ? 'translateX(0)' : 'translateX(-100%)'};
-    background: rgba(20, 20, 20, 0.95);
-    box-shadow: ${props => props.$isOpen ? '5px 0 25px rgba(0,0,0,0.5)' : 'none'};
   }
 `;
 
@@ -73,7 +71,7 @@ export const MobileHeader = styled.div`
     align-items: center;
     width: 100%;
     padding: 16px 24px;
-    background: rgba(20, 20, 20, 0.95);
+    background: rgba(15, 15, 15, 0.6);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: absolute;
